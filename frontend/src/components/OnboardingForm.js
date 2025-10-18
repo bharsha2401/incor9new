@@ -10,7 +10,14 @@ export default function OnboardingForm() {
     remarks: "",
   });
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  // ✅ Dynamic backend URL (works locally + on Render)
+  const API_URL =
+    process.env.NODE_ENV === "production"
+      ? "https://employee-backend.onrender.com" // <-- Replace with your actual Render backend URL
+      : "http://localhost:5001";
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleDeviceChange = (index, e) => {
     const newDevices = [...formData.devices];
@@ -18,7 +25,11 @@ export default function OnboardingForm() {
     setFormData({ ...formData, devices: newDevices });
   };
 
-  const addDevice = () => setFormData({ ...formData, devices: [...formData.devices, { device: "", remark: "" }] });
+  const addDevice = () =>
+    setFormData({
+      ...formData,
+      devices: [...formData.devices, { device: "", remark: "" }],
+    });
 
   const removeDevice = (index) => {
     const newDevices = formData.devices.filter((_, i) => i !== index);
@@ -27,8 +38,20 @@ export default function OnboardingForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:5001/api/employees", formData);
-    alert("Employee onboarded successfully!");
+    try {
+      await axios.post(`${API_URL}/api/employees`, formData);
+      alert("✅ Employee onboarded successfully!");
+      setFormData({
+        empId: "",
+        empName: "",
+        axaCode: "",
+        devices: [{ device: "", remark: "" }],
+        remarks: "",
+      });
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      alert("❌ Failed to submit. Please try again.");
+    }
   };
 
   return (
@@ -37,16 +60,36 @@ export default function OnboardingForm() {
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label>Employee ID</label>
-          <input name="empId" className="form-control" onChange={handleChange} required />
+          <input
+            name="empId"
+            className="form-control"
+            value={formData.empId}
+            onChange={handleChange}
+            required
+          />
         </div>
+
         <div className="mb-3">
           <label>Name</label>
-          <input name="empName" className="form-control" onChange={handleChange} required />
+          <input
+            name="empName"
+            className="form-control"
+            value={formData.empName}
+            onChange={handleChange}
+            required
+          />
         </div>
+
         <div className="mb-3">
           <label>Access Code</label>
-          <input name="axaCode" className="form-control" onChange={handleChange} />
+          <input
+            name="axaCode"
+            className="form-control"
+            value={formData.axaCode}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="mb-3">
           <label>Devices</label>
           {formData.devices.map((dev, i) => (
@@ -70,17 +113,38 @@ export default function OnboardingForm() {
                 />
               </div>
               <div className="col-auto">
-                <button type="button" className="btn btn-danger" onClick={() => removeDevice(i)}>Remove</button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => removeDevice(i)}
+                >
+                  Remove
+                </button>
               </div>
             </div>
           ))}
-          <button type="button" className="btn btn-secondary" onClick={addDevice}>Add device</button>
+          <button
+            type="button"
+            className="btn btn-secondary mt-2"
+            onClick={addDevice}
+          >
+            Add device
+          </button>
         </div>
+
         <div className="mb-3">
           <label>Remarks</label>
-          <textarea name="remarks" className="form-control" onChange={handleChange}></textarea>
+          <textarea
+            name="remarks"
+            className="form-control"
+            value={formData.remarks}
+            onChange={handleChange}
+          ></textarea>
         </div>
-        <button type="submit" className="btn btn-primary">Submit</button>
+
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
       </form>
     </div>
   );

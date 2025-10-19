@@ -6,6 +6,7 @@ export default function RelievingForm() {
   const [employee, setEmployee] = useState(null);
   const [error, setError] = useState("");
 
+  // ✅ Render backend URL
   const API_BASE = "https://incor9new.onrender.com";
 
   const handleSubmit = async (e) => {
@@ -16,7 +17,6 @@ export default function RelievingForm() {
     try {
       const res = await axios.get(`${API_BASE}/api/employees`);
       const emp = res.data.find((e) => e.empId === empId);
-
       if (emp) setEmployee(emp);
       else setError("❌ Employee not found!");
     } catch (err) {
@@ -38,9 +38,7 @@ export default function RelievingForm() {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">
-          Search
-        </button>
+        <button type="submit" className="btn btn-primary">Search</button>
       </form>
 
       <div className="mt-4">
@@ -50,26 +48,16 @@ export default function RelievingForm() {
           <div className="card p-3 shadow-sm">
             <h5>Employee Details</h5>
             <hr />
-            <p>
-              <strong>Employee ID:</strong> {employee.empId}
-            </p>
-            <p>
-              <strong>Name:</strong> {employee.empName}
-            </p>
-            <p>
-              <strong>Access Code:</strong> {employee.axaCode || "—"}
-            </p>
+            <p><strong>Employee ID:</strong> {employee.empId}</p>
+            <p><strong>Name:</strong> {employee.empName}</p>
+            <p><strong>Access Code:</strong> {employee.axaCode || "—"}</p>
             <p>
               <strong>Devices:</strong>{" "}
               {employee.devices.length > 0
-                ? employee.devices
-                    .map((d) => `${d.device} (${d.remark})`)
-                    .join(", ")
+                ? employee.devices.map((d) => `${d.device} (${d.remark})`).join(", ")
                 : "—"}
             </p>
-            <p>
-              <strong>Remarks:</strong> {employee.remarks || "—"}
-            </p>
+            <p><strong>Remarks:</strong> {employee.remarks || "—"}</p>
           </div>
         )}
       </div>

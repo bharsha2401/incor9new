@@ -5,7 +5,7 @@ export default function EmployeeTable() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
 
-  // ✅ Backend URL (Render)
+  // ✅ Render backend URL
   const API_BASE = "https://incor9new.onrender.com";
 
   const fetchData = async () => {
@@ -21,8 +21,7 @@ export default function EmployeeTable() {
     fetchData();
   }, []);
 
-  const exportExcel = () =>
-    window.open(`${API_BASE}/api/employees/export/excel`, "_blank");
+  const exportExcel = () => window.open(`${API_BASE}/api/employees/export/excel`, "_blank");
 
   return (
     <div>
@@ -33,9 +32,7 @@ export default function EmployeeTable() {
           placeholder="Search by ID or name"
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button className="btn btn-outline-secondary" onClick={exportExcel}>
-          Export Excel
-        </button>
+        <button className="btn btn-outline-secondary" onClick={exportExcel}>Export Excel</button>
       </div>
       <table className="table table-striped">
         <thead>
@@ -61,9 +58,7 @@ export default function EmployeeTable() {
                 <td>{emp.axaCode}</td>
                 <td>
                   {emp.devices.length > 0
-                    ? emp.devices
-                        .map((d) => `${d.device} (${d.remark})`)
-                        .join(", ")
+                    ? emp.devices.map((d) => `${d.device} (${d.remark})`).join(", ")
                     : "—"}
                 </td>
                 <td>{emp.remarks || "—"}</td>

@@ -1,22 +1,40 @@
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
-import employeeRoutes from "./routes/employeeRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// ✅ Allow Netlify frontend to access your backend
+const allowedOrigins = [
+  "https://onboarding01.netlify.app",  // your live Netlify site
+  "http://localhost:3000"              // for local development
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
-// Routes
-app.use("/api/employees", employeeRoutes);
+// MongoDB connection
+const PORT = process.env.PORT || 10000;
+const MONGO_URI = process.env.MONGO_URI;
 
-// Connect MongoDB Compass
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected (Compass)"))
-  .catch((err) => console.error("❌ MongoDB Connection Error:", err));
-
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`🚀 Backend running on port ${PORT}`));
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB Connected");
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error("❌ MongoDB Atlas Connection Error:", err));

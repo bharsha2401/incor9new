@@ -1,37 +1,34 @@
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import cors from "cors";
+import dotenv from "dotenv";
+import employeeRoutes from "./routes/employeeRoutes.js";
 
 dotenv.config();
 const app = express();
 
-// ✅ Configure CORS properly
+app.use(express.json());
+
+// ✅ Proper CORS setup
 app.use(
   cors({
     origin: [
-      "https://onboarding01.netlify.app",  // your live frontend URL
-      "http://localhost:3000"              // local dev
+      "https://onboarding01.netlify.app",
+      "http://localhost:3000"
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
-// ✅ Handle preflight (OPTIONS) requests globally
-app.options("*", cors());
-
-app.use(express.json());
-
-// ✅ MongoDB connection
-const PORT = process.env.PORT || 10000;
-const MONGO_URI = process.env.MONGO_URI;
-
+// ✅ Connect MongoDB
 mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB Connected");
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  })
-  .catch((err) => console.error("❌ MongoDB Atlas Connection Error:", err));
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.log("❌ DB Error:", err));
+
+// ✅ Routes
+app.use("/api/employees", employeeRoutes);
+
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

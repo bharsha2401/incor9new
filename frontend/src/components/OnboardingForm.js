@@ -10,11 +10,8 @@ export default function OnboardingForm() {
     remarks: "",
   });
 
-  // ✅ Dynamic backend URL (works locally + on Render)
-  const API_URL =
-    process.env.NODE_ENV === "production"
-      ? "https://employee-backend.onrender.com" // <-- Replace with your actual Render backend URL
-      : "http://localhost:5001";
+  // ✅ Backend URL (Render)
+  const API_BASE = "https://incor9new.onrender.com";
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,17 +36,10 @@ export default function OnboardingForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/api/employees`, formData);
+      await axios.post(`${API_BASE}/api/employees`, formData);
       alert("✅ Employee onboarded successfully!");
-      setFormData({
-        empId: "",
-        empName: "",
-        axaCode: "",
-        devices: [{ device: "", remark: "" }],
-        remarks: "",
-      });
-    } catch (err) {
-      console.error("Error submitting form:", err);
+    } catch (error) {
+      console.error("Error submitting form:", error);
       alert("❌ Failed to submit. Please try again.");
     }
   };
@@ -63,29 +53,24 @@ export default function OnboardingForm() {
           <input
             name="empId"
             className="form-control"
-            value={formData.empId}
             onChange={handleChange}
             required
           />
         </div>
-
         <div className="mb-3">
           <label>Name</label>
           <input
             name="empName"
             className="form-control"
-            value={formData.empName}
             onChange={handleChange}
             required
           />
         </div>
-
         <div className="mb-3">
           <label>Access Code</label>
           <input
             name="axaCode"
             className="form-control"
-            value={formData.axaCode}
             onChange={handleChange}
           />
         </div>
@@ -125,7 +110,7 @@ export default function OnboardingForm() {
           ))}
           <button
             type="button"
-            className="btn btn-secondary mt-2"
+            className="btn btn-secondary"
             onClick={addDevice}
           >
             Add device
@@ -137,11 +122,9 @@ export default function OnboardingForm() {
           <textarea
             name="remarks"
             className="form-control"
-            value={formData.remarks}
             onChange={handleChange}
           ></textarea>
         </div>
-
         <button type="submit" className="btn btn-primary">
           Submit
         </button>

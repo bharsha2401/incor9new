@@ -5,16 +5,12 @@ export default function EmployeeTable() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
 
-  // ✅ Dynamic backend URL — works for both local & deployed
-  const API_URL =
-    process.env.NODE_ENV === "production"
-      ? "https://employee-backend.onrender.com" // <-- replace with your Render backend URL
-      : "http://localhost:5001";
+  // ✅ Backend URL (Render)
+  const API_BASE = "https://incor9new.onrender.com";
 
-  // ✅ Fetch employee data
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/employees`);
+      const res = await axios.get(`${API_BASE}/api/employees`);
       setData(res.data);
     } catch (err) {
       console.error("Error fetching employees:", err);
@@ -25,14 +21,12 @@ export default function EmployeeTable() {
     fetchData();
   }, []);
 
-  // ✅ Export Excel
   const exportExcel = () =>
-    window.open(`${API_URL}/api/employees/export/excel`, "_blank");
+    window.open(`${API_BASE}/api/employees/export/excel`, "_blank");
 
   return (
     <div>
       <h2 className="mb-4">Employees</h2>
-
       <div className="d-flex mb-3">
         <input
           className="form-control me-2"
@@ -43,7 +37,6 @@ export default function EmployeeTable() {
           Export Excel
         </button>
       </div>
-
       <table className="table table-striped">
         <thead>
           <tr>
@@ -55,33 +48,27 @@ export default function EmployeeTable() {
           </tr>
         </thead>
         <tbody>
-          {data.length > 0 ? (
-            data
-              .filter(
-                (emp) =>
-                  emp.empId?.includes(search) ||
-                  emp.empName?.toLowerCase().includes(search.toLowerCase())
-              )
-              .map((emp) => (
-                <tr key={emp._id}>
-                  <td>{emp.empId}</td>
-                  <td>{emp.empName}</td>
-                  <td>{emp.axaCode}</td>
-                  <td>
-                    {emp.devices
-                      ?.map((d) => `${d.device} (${d.remark})`)
-                      .join(", ")}
-                  </td>
-                  <td>{emp.remarks}</td>
-                </tr>
-              ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="text-center">
-                No employees found.
-              </td>
-            </tr>
-          )}
+          {data
+            .filter(
+              (emp) =>
+                emp.empId.includes(search) ||
+                emp.empName.toLowerCase().includes(search.toLowerCase())
+            )
+            .map((emp) => (
+              <tr key={emp._id}>
+                <td>{emp.empId}</td>
+                <td>{emp.empName}</td>
+                <td>{emp.axaCode}</td>
+                <td>
+                  {emp.devices.length > 0
+                    ? emp.devices
+                        .map((d) => `${d.device} (${d.remark})`)
+                        .join(", ")
+                    : "—"}
+                </td>
+                <td>{emp.remarks || "—"}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
